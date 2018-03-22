@@ -1,8 +1,8 @@
 import * as EventEmitter from "events";
 
-import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as cors from "cors";
+import * as express from "express";
 import * as uuid from "uuid";
 
 import ConfigInterface from "./interfaces/ConfigInterface";
@@ -14,7 +14,7 @@ export default class WebServer extends EventEmitter {
     private config: ConfigInterface;
     private server?: any;
 
-    constructor(config: ConfigInterface){
+    constructor(config: ConfigInterface) {
         super();
 
         this.producer = new Producer(config);
@@ -24,7 +24,7 @@ export default class WebServer extends EventEmitter {
         this.producer.on("error", this.handleError.bind(this));
     }
 
-    async start(): Promise<void> {
+    public async start(): Promise<void> {
 
         await this.producer.connect();
 
@@ -35,7 +35,7 @@ export default class WebServer extends EventEmitter {
 
         app.get("/admin/health", (req, res) => {
             res.status(200).json({
-                status: "UP"
+                status: "UP",
             });
         });
 
@@ -44,19 +44,19 @@ export default class WebServer extends EventEmitter {
         });
 
         app.post("/produce", async (req, res) => {
-            
+
             const url = req.body.url;
 
-            if(!url){
+            if (!url) {
                 return res.status(404).json({
-                    error: "Missing 'url' field on body."
+                    error: "Missing 'url' field on body.",
                 });
             }
 
             const key = uuid.v4();
 
             const payload: ProducerPayloadInterface = {
-                url
+                url,
             };
 
             await this.producer.produce(key, payload);
@@ -64,15 +64,15 @@ export default class WebServer extends EventEmitter {
             super.emit("request", {key, url});
 
             res.status(201).json({
-                key
+                key,
             });
         });
 
         this.server = await (new Promise((resolve, reject) => {
-            let server = undefined;
+            let server;
             server = app.listen(this.config.webserver.port, (error) => {
 
-                if(error){
+                if (error) {
                     return reject(error);
                 }
 
@@ -83,18 +83,18 @@ export default class WebServer extends EventEmitter {
 
     public close(): void {
 
-        if(this.producer){
+        if (this.producer) {
             this.producer.close();
         }
 
-        if(this.server){
+        if (this.server) {
             this.server.close();
         }
     }
 
     /**
      * If there is an error, please report it
-    */
+     */
     private handleError(error: Error): void {
         super.emit("error", error);
     }
