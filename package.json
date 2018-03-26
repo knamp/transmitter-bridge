@@ -1,6 +1,6 @@
 {
   "name": "knamp-transmitter-bridge",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Produce requests to Apache Kafka topic and trigger content-transmitter",
   "main": "dist/index.js",
   "repository": "git@github.com:knamp/transmitter-bridge.git",
