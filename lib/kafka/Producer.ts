@@ -48,9 +48,9 @@ export default class Producer extends EventEmitter {
    */
   public close(): void {
 
-      if (this.producer) {
-          this.producer.close();
-      }
+    if (this.producer) {
+      this.producer.close();
+    }
   }
 
   /**

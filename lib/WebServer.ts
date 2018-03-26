@@ -10,92 +10,91 @@ import ProducerPayloadInterface from "./interfaces/ProducerPayloadInterface";
 import Producer from "./kafka/Producer";
 
 export default class WebServer extends EventEmitter {
-    private producer: Producer;
-    private config: ConfigInterface;
-    private server?: any;
+  private producer: Producer;
+  private config: ConfigInterface;
+  private server?: any;
 
-    constructor(config: ConfigInterface) {
-        super();
+  constructor(config: ConfigInterface) {
+    super();
 
-        this.producer = new Producer(config);
-        this.config = config;
-        this.server = null;
+    this.producer = new Producer(config);
+    this.config = config;
+    this.server = null;
 
-        this.producer.on("error", this.handleError.bind(this));
-    }
+    this.producer.on("error", this.handleError.bind(this));
+  }
 
-    public async start(): Promise<void> {
+  public async start(): Promise<void> {
+    await this.producer.connect();
 
-        await this.producer.connect();
+    const app = express();
 
-        const app = express();
+    app.use(cors());
+    app.use(bodyParser.json());
 
-        app.use(cors());
-        app.use(bodyParser.json());
+    app.get("/admin/health", (req, res) => {
+      res.status(200).json({
+        status: "UP",
+      });
+    });
 
-        app.get("/admin/health", (req, res) => {
-            res.status(200).json({
-                status: "UP",
-            });
+    app.get("/admin/healthcheck", (req, res) => {
+      res.status(200).end();
+    });
+
+    app.post("/produce", async (req, res) => {
+
+      const url = req.body.url;
+
+      if (!url) {
+        return res.status(404).json({
+          error: "Missing 'url' field on body.",
         });
+      }
 
-        app.get("/admin/healthcheck", (req, res) => {
-            res.status(200).end();
-        });
+      const key = uuid.v4();
 
-        app.post("/produce", async (req, res) => {
+      const payload: ProducerPayloadInterface = {
+        url,
+      };
 
-            const url = req.body.url;
+      await this.producer.produce(key, payload);
 
-            if (!url) {
-                return res.status(404).json({
-                    error: "Missing 'url' field on body.",
-                });
-            }
+      super.emit("request", { key, url });
 
-            const key = uuid.v4();
+      res.status(201).json({
+        key,
+      });
+    });
 
-            const payload: ProducerPayloadInterface = {
-                url,
-            };
+    this.server = await (new Promise((resolve, reject) => {
+      let server;
+      server = app.listen(this.config.webserver.port, (error) => {
 
-            await this.producer.produce(key, payload);
-
-            super.emit("request", {key, url});
-
-            res.status(201).json({
-                key,
-            });
-        });
-
-        this.server = await (new Promise((resolve, reject) => {
-            let server;
-            server = app.listen(this.config.webserver.port, (error) => {
-
-                if (error) {
-                    return reject(error);
-                }
-
-                resolve(server);
-            });
-        }));
-    }
-
-    public close(): void {
-
-        if (this.producer) {
-            this.producer.close();
+        if (error) {
+          return reject(error);
         }
 
-        if (this.server) {
-            this.server.close();
-        }
+        resolve(server);
+      });
+    }));
+  }
+
+  public close(): void {
+
+    if (this.producer) {
+      this.producer.close();
     }
 
-    /**
-     * If there is an error, please report it
-     */
-    private handleError(error: Error): void {
-        super.emit("error", error);
+    if (this.server) {
+      this.server.close();
     }
+  }
+
+  /**
+   * If there is an error, please report it
+   */
+  private handleError(error: Error): void {
+    super.emit("error", error);
+  }
 }

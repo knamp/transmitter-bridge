@@ -35,7 +35,7 @@ export default interface ConfigInterface {
     partitionerType?: number,
   };
   webserver: {
-   port?: number;
+    port?: number;
   };
   consumerOptions?: {
     batchSize?: number;

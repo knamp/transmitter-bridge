@@ -10,8 +10,8 @@ import TransmitterBridge from "../";
     groupId: "transmitter-group",
     produceTo: "transmitter-consume",
     webserver: {
-        port: 8844
-    }
+        port: 8844,
+    },
   });
 
   server.on("error", (error) => {
@@ -19,7 +19,8 @@ import TransmitterBridge from "../";
     console.error(error);
   });
 
-  server.on("request", data => {
+  server.on("request", (data) => {
+    // tslint:disable-next-line
     console.log(data);
   });
 
