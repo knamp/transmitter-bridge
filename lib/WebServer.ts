@@ -25,7 +25,9 @@ export default class WebServer extends EventEmitter {
   }
 
   public async start(): Promise<void> {
-    await this.producer.connect();
+    if (this.config.kafkaHost) {
+      await this.producer.connect();
+    }
 
     const app = express();
 
@@ -57,6 +59,12 @@ export default class WebServer extends EventEmitter {
       const payload: ProducerPayloadInterface = {
         url,
       };
+
+      if (!this.config.kafkaHost) {
+        return res.status(404).json({
+          error: "KafkaHost not configured correctly.",
+        });
+      }
 
       await this.producer.produce(key, payload);
 
