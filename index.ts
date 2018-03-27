@@ -1,4 +1,4 @@
-import * as merge from "deepmerge";
+import merge from "lodash/merge";
 import ConfigInterface from "./lib/interfaces/ConfigInterface";
 
 import WebServer from "./lib/WebServer";
