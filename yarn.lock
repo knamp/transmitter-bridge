@@ -307,6 +307,10 @@ debug@~3.1.0:
   dependencies:
     ms "2.0.0"
 
+deepmerge@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-2.1.0.tgz#511a54fff405fc346f0240bb270a3e9533a31102"
+
 delayed-stream@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/delayed-stream/-/delayed-stream-1.0.0.tgz#df3ae199acadfb7d440aaae0b29e2272b24ec619"
@@ -651,7 +655,7 @@ kafka-node@~2.4.1:
   optionalDependencies:
     snappy "^6.0.1"
 
-lodash@^4.14.0, lodash@^4.17.4, lodash@^4.17.5:
+lodash@^4.14.0, lodash@^4.17.4:
   version "4.17.5"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.5.tgz#99a92d65c0272debe8c96b6057bc8fbfa3bed511"
 
