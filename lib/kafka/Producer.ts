@@ -12,8 +12,7 @@ export default class Producer extends EventEmitter {
   constructor(public config: ConfigInterface) {
     super();
 
-    this.producer = new SinekProducer(config, null,
-      config.producerPartitionCount || 1);
+    this.producer = new SinekProducer(config);
 
     this.handleError = this.handleError.bind(this);
   }
@@ -24,11 +23,11 @@ export default class Producer extends EventEmitter {
   public async connect(): Promise<void> {
     try {
       await this.producer.connect();
+
+      this.producer.on("error", this.handleError);
     } catch (error) {
       this.handleError(error);
     }
-
-    this.producer.on("error", this.handleError);
   }
 
   /**
@@ -47,7 +46,6 @@ export default class Producer extends EventEmitter {
    * Closes the producer
    */
   public close(): void {
-
     if (this.producer) {
       this.producer.close();
     }
