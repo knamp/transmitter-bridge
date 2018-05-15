@@ -70,7 +70,7 @@ export default class WebServer extends EventEmitter {
 
       super.emit("request", { key, url });
 
-      res.status(201).json({
+      return res.status(201).json({
         key,
       });
     });
