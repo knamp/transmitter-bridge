@@ -1,5 +1,7 @@
 # Transmitter Bridge
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/knamp/transmitter-bridge.svg)](https://greenkeeper.io/)
+
 Produce POST requests to Apache Kafka topic and trigger the Content-Transmitter.
 
 ## Usage
